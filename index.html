@@ -1,0 +1,1228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <meta name="description" content="Track motorcycle servicing, maintenance schedules, expenses and reminders with OTXS Garage.">
+  <title>OTXS Garage | Bike Maintenance Tracker</title>
+
+  <style>
+    :root {
+      --bg: #101114;
+      --panel: #191a1f;
+      --panel2: #22232a;
+      --border: #32333d;
+      --text: #f5f5f5;
+      --muted: #a5a6b0;
+      --accent: #f59e0b;
+      --orange: #fb923c;
+      --green: #4ade80;
+      --red: #f87171;
+      --blue: #60a5fa;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .container {
+      width: min(1150px, calc(100% - 30px));
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background: #101114;
+    }
+
+    .nav {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 850;
+      font-size: 1.15rem;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--accent), var(--orange));
+      color: #111;
+      font-size: 1.25rem;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 500;
+    }
+
+    a { color: var(--accent); }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .hero { padding: 38px 0 25px; }
+
+    .eyebrow {
+      text-transform: uppercase;
+      color: var(--accent);
+      font-size: .75rem;
+      letter-spacing: 1.8px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 8px 0;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      letter-spacing: -1.2px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin: 0;
+      max-width: 650px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 10px 0 22px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .stat-label { color: var(--muted); font-size: .8rem; }
+
+    .stat-value {
+      margin-top: 6px;
+      font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-note { color: var(--muted); font-size: .75rem; margin-top: 3px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 20px;
+      align-items: start;
+      padding-bottom: 45px;
+    }
+
+    .panel {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .panel h2 { font-size: 1.12rem; margin: 0 0 5px; }
+
+    .muted { color: var(--muted); font-size: .85rem; }
+
+    .panel-description { margin: 0 0 20px; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: .84rem;
+      font-weight: 650;
+      color: #dedee3;
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      background: #111216;
+      color: var(--text);
+    }
+
+    textarea { min-height: 85px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #f59e0b1c;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 9px 13px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: .84rem;
+      font-weight: 750;
+      text-decoration: none;
+      transition: filter .15s;
+    }
+
+    .btn:hover { filter: brightness(1.08); }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), var(--orange));
+      color: #15110a;
+    }
+
+    .secondary {
+      background: var(--panel2);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .danger {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--red);
+    }
+
+    .block { width: 100%; }
+    .actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 9px;
+      border-radius: 100px;
+      font-size: .73rem;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .badge.due { color: #fecaca; background: #7f1d1d55; }
+    .badge.soon { color: #fde68a; background: #854d0e55; }
+    .badge.ok { color: #bbf7d0; background: #16653455; }
+    .badge.neutral { color: #bfdbfe; background: #1e40af44; }
+
+    .bike-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .bike-icon {
+      width: 62px;
+      height: 62px;
+      flex: 0 0 62px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: #f59e0b18;
+      font-size: 1.9rem;
+    }
+
+    .bike-card h3 { margin: 0 0 4px; font-size: 1.05rem; }
+    .bike-card p { margin: 0; color: var(--muted); font-size: .82rem; }
+
+    .progress {
+      height: 7px;
+      background: #303139;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress > div {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--orange));
+      width: 0;
+      transition: width .2s;
+    }
+
+    .reminder, .record {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .reminder:last-child, .record:last-child { border-bottom: 0; }
+
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .item-title { font-weight: 750; overflow-wrap: anywhere; }
+    .item-meta { color: var(--muted); font-size: .78rem; margin-top: 4px; }
+
+    .item-cost {
+      font-weight: 800;
+      white-space: nowrap;
+      color: var(--accent);
+    }
+
+    .item-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .item-actions .btn { min-height: 32px; padding: 5px 9px; font-size: .76rem; }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 22px 0;
+      font-size: .87rem;
+    }
+
+    .side-sticky { position: sticky; top: 15px; }
+
+    .tip {
+      border: 1px solid #f59e0b40;
+      background: #f59e0b0d;
+      padding: 14px;
+      border-radius: 12px;
+      color: #e8d9b9;
+      font-size: .81rem;
+      margin-top: 15px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 23px 0;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      z-index: 5;
+      transform: translate(-50%, 15px);
+      opacity: 0;
+      pointer-events: none;
+      max-width: calc(100% - 30px);
+      background: #272830;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 17px;
+      box-shadow: 0 8px 35px #0007;
+      transition: opacity .2s, transform .2s;
+      text-align: center;
+      font-size: .87rem;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .side-sticky { position: static; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .container { width: calc(100% - 22px); }
+      .panel { padding: 16px; }
+      .grid { gap: 12px 10px; }
+      input, select, textarea { padding: 10px; }
+      .stat { padding: 14px; }
+      .nav-link { font-size: .78rem; }
+      .bike-card { align-items: flex-start; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      header, .hero, .no-print, #bikeFormPanel, #recordFormPanel,
+      #reminderFormPanel, #historyActions, footer { display: none !important; }
+      .container, .layout { display: block; width: 100%; padding: 0; }
+      .panel, .stat { background: white; color: black; border: 1px solid #ddd; break-inside: avoid; }
+      .muted, .stat-label, .stat-note, .item-meta { color: #555; }
+      .stats { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container nav">
+    <a href="https://otxs.de" class="brand">
+      <span class="brand-icon">O</span>
+      <span>OTXS Garage<small>Bike care made simple</small></span>
+    </a>
+    <a href="https://otxs.de" class="nav-link">← OTXS Home</a>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="eyebrow">OTXS · Vehicle tools</div>
+    <h1>Your bike. Its history.<br>All in one place.</h1>
+    <p>Track odometer readings, service records, maintenance schedules and ownership costs. Keep your motorcycle ready for the next ride.</p>
+  </section>
+
+  <section class="stats" aria-label="Maintenance summary">
+    <div class="stat">
+      <div class="stat-label">Current odometer</div>
+      <div class="stat-value" id="statOdometer">0 km</div>
+      <div class="stat-note">Latest recorded reading</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Maintenance expenses</div>
+      <div class="stat-value" id="statExpenses">₹0</div>
+      <div class="stat-note">Saved service records</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Upcoming reminders</div>
+      <div class="stat-value" id="statUpcoming">0</div>
+      <div class="stat-note">Not yet marked complete</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Last service</div>
+      <div class="stat-value" id="statLastService">—</div>
+      <div class="stat-note" id="statLastServiceNote">No service recorded</div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div>
+      <section class="panel" id="bikeFormPanel">
+        <div class="section-head">
+          <div>
+            <h2>Your motorcycle</h2>
+            <div class="muted">Set up your bike details and current odometer.</div>
+          </div>
+          <span>🏍️</span>
+        </div>
+
+        <form id="bikeForm">
+          <div class="grid">
+            <div class="field">
+              <label for="bikeName">Bike name / model</label>
+              <input id="bikeName" maxlength="100" placeholder="e.g. V-Strom SX" required>
+            </div>
+            <div class="field">
+              <label for="bikeReg">Registration (optional)</label>
+              <input id="bikeReg" maxlength="30" placeholder="Vehicle registration">
+            </div>
+            <div class="field">
+              <label for="bikeYear">Model year</label>
+              <input id="bikeYear" type="number" min="1900" max="2100" placeholder="e.g. 2025">
+            </div>
+            <div class="field">
+              <label for="currentOdo">Current odometer (km)</label>
+              <input id="currentOdo" type="number" min="0" max="10000000" step="any" value="0" required>
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency">
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="NPR">NPR (रु)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="defaultInterval">Default service interval (km)</label>
+              <input id="defaultInterval" type="number" min="1" max="1000000" step="1" value="3000" required>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="submit">Save bike details</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="recordFormPanel">
+        <div class="section-head">
+          <div>
+            <h2>Add maintenance record</h2>
+            <div class="muted">Log completed servicing or other bike expenses.</div>
+          </div>
+          <span>🧰</span>
+        </div>
+
+        <form id="recordForm">
+          <div class="grid">
+            <div class="field">
+              <label for="recordType">Maintenance type</label>
+              <select id="recordType" required>
+                <option value="General service">General service</option>
+                <option value="Engine oil">Engine oil</option>
+                <option value="Oil filter">Oil filter</option>
+                <option value="Air filter">Air filter</option>
+                <option value="Chain cleaning / lubrication">Chain cleaning / lubrication</option>
+                <option value="Chain and sprocket">Chain and sprocket</option>
+                <option value="Tyres">Tyres</option>
+                <option value="Brakes">Brakes</option>
+                <option value="Battery">Battery</option>
+                <option value="Coolant">Coolant</option>
+                <option value="Spark plug">Spark plug</option>
+                <option value="Clutch">Clutch</option>
+                <option value="Repair">Repair</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="recordDate">Date</label>
+              <input id="recordDate" type="date" required>
+            </div>
+            <div class="field">
+              <label for="recordOdo">Odometer at service (km)</label>
+              <input id="recordOdo" type="number" min="0" max="10000000" step="any" required>
+            </div>
+            <div class="field">
+              <label for="recordCost">Total cost</label>
+              <input id="recordCost" type="number" min="0" max="1000000000" step="any" value="0" required>
+            </div>
+            <div class="field">
+              <label for="nextServiceKm">Next service at (km, optional)</label>
+              <input id="nextServiceKm" type="number" min="0" max="10000000" step="any" placeholder="e.g. 18000">
+            </div>
+            <div class="field">
+              <label for="recordWorkshop">Workshop / provider (optional)</label>
+              <input id="recordWorkshop" maxlength="100" placeholder="Workshop name">
+            </div>
+            <div class="field full">
+              <label for="recordNotes">Notes (optional)</label>
+              <textarea id="recordNotes" maxlength="1500" placeholder="Parts replaced, oil grade, observations..."></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="submit">Add maintenance record</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="reminderFormPanel">
+        <div class="section-head">
+          <div>
+            <h2>Maintenance reminders</h2>
+            <div class="muted">Create mileage-based or date-based reminders.</div>
+          </div>
+          <span>🔔</span>
+        </div>
+
+        <form id="reminderForm">
+          <div class="grid">
+            <div class="field">
+              <label for="reminderName">Maintenance item</label>
+              <input id="reminderName" maxlength="100" placeholder="e.g. Change engine oil" required>
+            </div>
+            <div class="field">
+              <label for="reminderDate">Due date (optional)</label>
+              <input id="reminderDate" type="date">
+            </div>
+            <div class="field">
+              <label for="reminderKm">Due odometer (km, optional)</label>
+              <input id="reminderKm" type="number" min="0" max="10000000" step="any" placeholder="e.g. 18000">
+            </div>
+            <div class="field">
+              <label for="reminderCost">Expected cost (optional)</label>
+              <input id="reminderCost" type="number" min="0" max="1000000000" step="any" value="0">
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="submit">Add reminder</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Maintenance history</h2>
+            <div class="muted">Your saved service and expense records.</div>
+          </div>
+          <select id="recordFilter" aria-label="Filter maintenance records" style="width:auto;max-width:160px">
+            <option value="all">All records</option>
+            <option value="General service">General service</option>
+            <option value="Engine oil">Engine oil</option>
+            <option value="Tyres">Tyres</option>
+            <option value="Brakes">Brakes</option>
+            <option value="Repair">Repair</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div id="historyList"><div class="empty">No maintenance records yet.</div></div>
+      </section>
+    </div>
+
+    <aside class="side-sticky">
+      <section class="panel">
+        <h2>Bike overview</h2>
+        <p class="muted panel-description">Your saved motorcycle profile.</p>
+
+        <div class="bike-card">
+          <div class="bike-icon">🏍️</div>
+          <div>
+            <h3 id="overviewName">Your motorcycle</h3>
+            <p id="overviewMeta">Add your bike details to get started.</p>
+            <p id="overviewReg"></p>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Service interval guide</strong><br>
+          Your default interval is a personal tracking setting, not a manufacturer recommendation. Always follow your motorcycle's owner manual for service schedules.
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary block" id="updateOdoBtn" type="button">Update odometer</button>
+          <button class="btn secondary block" id="exportBtn" type="button">Export data (JSON)</button>
+          <button class="btn secondary block" id="printBtn" type="button">Print / Save PDF</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Upcoming reminders</h2>
+            <div class="muted">Items approaching their due date or mileage.</div>
+          </div>
+          <span>📅</span>
+        </div>
+        <div id="reminderList"><div class="empty">No reminders yet.</div></div>
+      </section>
+
+      <section class="panel" id="historyActions">
+        <h2>Data and privacy</h2>
+        <p class="muted">
+          Your bike profile, maintenance records and reminders are saved in this browser on this device. They are not sent to an OTXS server.
+        </p>
+        <div class="actions">
+          <button class="btn danger block" id="clearAllBtn" type="button">Delete all app data</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© <span id="year"></span> OTXS Garage · Discover and Explore</span>
+    <a href="https://otxs.de">OTXS Home</a>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const KEY = "otxs-garage-data-v1";
+  const $ = id => document.getElementById(id);
+
+  const defaultData = {
+    bike: {
+      name: "",
+      reg: "",
+      year: "",
+      odometer: 0,
+      currency: "INR",
+      interval: 3000
+    },
+    records: [],
+    reminders: []
+  };
+
+  let data = loadData();
+  let toastTimeout;
+
+  function loadData() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (!saved || typeof saved !== "object") return structuredClone(defaultData);
+
+      return {
+        bike: { ...defaultData.bike, ...(saved.bike || {}) },
+        records: Array.isArray(saved.records) ? saved.records : [],
+        reminders: Array.isArray(saved.reminders) ? saved.reminders : []
+      };
+    } catch {
+      return structuredClone(defaultData);
+    }
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+      return true;
+    } catch {
+      toast("Unable to save data. Browser storage may be unavailable or full.");
+      return false;
+    }
+  }
+
+  function uid() {
+    return globalThis.crypto?.randomUUID
+      ? crypto.randomUUID()
+      : Date.now() + "-" + Math.random().toString(16).slice(2);
+  }
+
+  function num(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  }
+
+  function money(value) {
+    const currency = data.bike.currency || "INR";
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 2
+      }).format(num(value));
+    } catch {
+      return currency + " " + num(value).toFixed(2);
+    }
+  }
+
+  function fmtNumber(value) {
+    return num(value).toLocaleString(undefined, { maximumFractionDigits: 1 });
+  }
+
+  function dateToday() {
+    const d = new Date();
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  }
+
+  function dateLabel(value) {
+    if (!value) return "Date not set";
+    const date = new Date(value + "T00:00:00");
+    return Number.isNaN(date.getTime())
+      ? value
+      : date.toLocaleDateString(undefined, {
+          year: "numeric", month: "short", day: "numeric"
+        });
+  }
+
+  function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => el.classList.remove("show"), 2700);
+  }
+
+  function safeText(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    el.textContent = text == null ? "" : String(text);
+    return el;
+  }
+
+  function badge(text, kind) {
+    return safeText("span", "badge " + kind, text);
+  }
+
+  function getReminderStatus(reminder) {
+    const odo = num(data.bike.odometer);
+    const dueKm = reminder.dueKm !== null && reminder.dueKm !== undefined
+      && reminder.dueKm !== "" ? num(reminder.dueKm) : null;
+
+    const kmLeft = dueKm === null ? null : dueKm - odo;
+    let daysLeft = null;
+
+    if (reminder.dueDate) {
+      const due = new Date(reminder.dueDate + "T00:00:00");
+      const today = new Date(dateToday() + "T00:00:00");
+      daysLeft = Math.ceil((due - today) / 86400000);
+    }
+
+    const dueNow = (kmLeft !== null && kmLeft <= 0) ||
+      (daysLeft !== null && daysLeft <= 0);
+
+    const soon = !dueNow && (
+      (kmLeft !== null && kmLeft <= 500) ||
+      (daysLeft !== null && daysLeft <= 14)
+    );
+
+    if (dueNow) return { text: "Due", kind: "due", kmLeft, daysLeft };
+    if (soon) return { text: "Due soon", kind: "soon", kmLeft, daysLeft };
+    return { text: "Upcoming", kind: "ok", kmLeft, daysLeft };
+  }
+
+  function renderBike() {
+    const bike = data.bike;
+
+    $("bikeName").value = bike.name || "";
+    $("bikeReg").value = bike.reg || "";
+    $("bikeYear").value = bike.year || "";
+    $("currentOdo").value = num(bike.odometer);
+    $("currency").value = bike.currency || "INR";
+    $("defaultInterval").value = num(bike.interval) || 3000;
+
+    $("overviewName").textContent = bike.name || "Your motorcycle";
+
+    const details = [];
+    if (bike.year) details.push(String(bike.year));
+    details.push(fmtNumber(bike.odometer) + " km");
+
+    $("overviewMeta").textContent = bike.name
+      ? details.join(" · ")
+      : "Add your bike details to get started.";
+
+    $("overviewReg").textContent = bike.reg ? "Registration: " + bike.reg : "";
+  }
+
+  function renderStats() {
+    const totalExpenses = data.records.reduce(
+      (sum, record) => sum + num(record.cost), 0
+    );
+
+    const openReminders = data.reminders.filter(r => !r.completed);
+    const latest = [...data.records].sort((a, b) => {
+      const dateDiff = String(b.date).localeCompare(String(a.date));
+      return dateDiff || num(b.odometer) - num(a.odometer);
+    })[0];
+
+    $("statOdometer").textContent = fmtNumber(data.bike.odometer) + " km";
+    $("statExpenses").textContent = money(totalExpenses);
+    $("statUpcoming").textContent = openReminders.length;
+
+    if (latest) {
+      $("statLastService").textContent = dateLabel(latest.date);
+      $("statLastServiceNote").textContent =
+        latest.type + " · " + fmtNumber(latest.odometer) + " km";
+    } else {
+      $("statLastService").textContent = "—";
+      $("statLastServiceNote").textContent = "No service recorded";
+    }
+  }
+
+  function renderHistory() {
+    const list = $("historyList");
+    list.replaceChildren();
+
+    const filter = $("recordFilter").value;
+    const records = [...data.records]
+      .filter(r => filter === "all" || r.type === filter)
+      .sort((a, b) => {
+        const dateDiff = String(b.date).localeCompare(String(a.date));
+        return dateDiff || num(b.odometer) - num(a.odometer);
+      });
+
+    if (!records.length) {
+      list.append(safeText("div", "empty",
+        data.records.length
+          ? "No records match this filter."
+          : "No maintenance records yet. Add your first record above."));
+      return;
+    }
+
+    records.forEach(record => {
+      const wrapper = safeText("div", "record", "");
+      const top = safeText("div", "item-top", "");
+
+      const left = document.createElement("div");
+      left.append(
+        safeText("div", "item-title", record.type),
+        safeText("div", "item-meta",
+          `${dateLabel(record.date)} · ${fmtNumber(record.odometer)} km`)
+      );
+
+      const cost = safeText("div", "item-cost", money(record.cost));
+      top.append(left, cost);
+      wrapper.append(top);
+
+      if (record.workshop) {
+        wrapper.append(safeText("div", "item-meta", "Workshop: " + record.workshop));
+      }
+
+      if (record.nextKm !== null && record.nextKm !== undefined && record.nextKm !== "") {
+        wrapper.append(safeText("div", "item-meta",
+          "Next service at " + fmtNumber(record.nextKm) + " km"));
+      }
+
+      if (record.notes) {
+        wrapper.append(safeText("div", "item-meta", record.notes));
+      }
+
+      const actions = safeText("div", "item-actions", "");
+      const edit = safeText("button", "btn secondary", "Edit");
+      edit.type = "button";
+      edit.addEventListener("click", () => editRecord(record.id));
+
+      const remove = safeText("button", "btn danger", "Delete");
+      remove.type = "button";
+      remove.addEventListener("click", () => deleteRecord(record.id));
+
+      actions.append(edit, remove);
+      wrapper.append(actions);
+      list.append(wrapper);
+    });
+  }
+
+  function renderReminders() {
+    const list = $("reminderList");
+    list.replaceChildren();
+
+    const reminders = [...data.reminders].sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      return String(a.dueDate || "9999-12-31")
+        .localeCompare(String(b.dueDate || "9999-12-31"));
+    });
+
+    if (!reminders.length) {
+      list.append(safeText("div", "empty", "No reminders yet."));
+      return;
+    }
+
+    reminders.forEach(reminder => {
+      const wrapper = safeText("div", "reminder", "");
+      const top = safeText("div", "item-top", "");
+
+      const left = document.createElement("div");
+      left.append(safeText("div", "item-title", reminder.name));
+
+      const metaParts = [];
+      if (reminder.dueDate) metaParts.push("Date: " + dateLabel(reminder.dueDate));
+      if (reminder.dueKm !== null && reminder.dueKm !== undefined && reminder.dueKm !== "") {
+        metaParts.push("At " + fmtNumber(reminder.dueKm) + " km");
+      }
+      if (reminder.cost) metaParts.push("Expected: " + money(reminder.cost));
+
+      left.append(safeText("div", "item-meta",
+        metaParts.join(" · ") || "No due date or odometer set"));
+
+      if (!reminder.completed) {
+        const status = getReminderStatus(reminder);
+        left.append(badge(status.text, status.kind));
+
+        if (status.kmLeft !== null && status.kmLeft > 0) {
+          left.append(safeText("div", "item-meta",
+            fmtNumber(status.kmLeft) + " km remaining"));
+        }
+        if (status.daysLeft !== null && status.daysLeft > 0) {
+          left.append(safeText("div", "item-meta",
+            status.daysLeft + " day(s) remaining"));
+        }
+      }
+
+      top.append(left);
+
+      if (reminder.completed) {
+        top.append(badge("Completed", "neutral"));
+      }
+
+      wrapper.append(top);
+
+      const actions = safeText("div", "item-actions", "");
+
+      if (!reminder.completed) {
+        const complete = safeText("button", "btn secondary", "Mark complete");
+        complete.type = "button";
+        complete.addEventListener("click", () => completeReminder(reminder.id));
+        actions.append(complete);
+      }
+
+      const remove = safeText("button", "btn danger", "Delete");
+      remove.type = "button";
+      remove.addEventListener("click", () => deleteReminder(reminder.id));
+      actions.append(remove);
+
+      wrapper.append(actions);
+      list.append(wrapper);
+    });
+  }
+
+  function renderAll() {
+    renderBike();
+    renderStats();
+    renderHistory();
+    renderReminders();
+  }
+
+  $("bikeForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const odometer = num($("currentOdo").value);
+
+    if (data.records.some(record => odometer < num(record.odometer))) {
+      if (!confirm(
+        "The current odometer is lower than a saved service record. Save this reading anyway?"
+      )) return;
+    }
+
+    data.bike = {
+      name: $("bikeName").value.trim(),
+      reg: $("bikeReg").value.trim(),
+      year: $("bikeYear").value.trim(),
+      odometer,
+      currency: $("currency").value,
+      interval: Math.max(1, num($("defaultInterval").value))
+    };
+
+    if (persist()) {
+      renderAll();
+      toast("Bike details saved.");
+    }
+  });
+
+  $("recordForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const odometer = num($("recordOdo").value);
+    const nextValue = $("nextServiceKm").value.trim();
+
+    if (odometer > num(data.bike.odometer)) {
+      data.bike.odometer = odometer;
+      $("currentOdo").value = odometer;
+    }
+
+    const record = {
+      id: uid(),
+      type: $("recordType").value,
+      date: $("recordDate").value,
+      odometer,
+      cost: num($("recordCost").value),
+      nextKm: nextValue === "" ? null : num(nextValue),
+      workshop: $("recordWorkshop").value.trim(),
+      notes: $("recordNotes").value.trim()
+    };
+
+    data.records.push(record);
+
+    if (record.nextKm !== null) {
+      data.reminders.push({
+        id: uid(),
+        name: "Next: " + record.type,
+        dueDate: "",
+        dueKm: record.nextKm,
+        cost: 0,
+        completed: false
+      });
+    }
+
+    if (persist()) {
+      $("recordForm").reset();
+      $("recordDate").value = dateToday();
+      $("recordCost").value = 0;
+      renderAll();
+      toast("Maintenance record added.");
+    }
+  });
+
+  $("reminderForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = $("reminderName").value.trim();
+    const dueDate = $("reminderDate").value;
+    const dueKmRaw = $("reminderKm").value.trim();
+
+    if (!dueDate && dueKmRaw === "") {
+      toast("Enter a due date, an odometer reading, or both.");
+      return;
+    }
+
+    data.reminders.push({
+      id: uid(),
+      name,
+      dueDate,
+      dueKm: dueKmRaw === "" ? null : num(dueKmRaw),
+      cost: num($("reminderCost").value),
+      completed: false
+    });
+
+    if (persist()) {
+      $("reminderForm").reset();
+      $("reminderCost").value = 0;
+      renderAll();
+      toast("Maintenance reminder added.");
+    }
+  });
+
+  function editRecord(id) {
+    const record = data.records.find(r => r.id === id);
+    if (!record) return;
+
+    $("recordType").value = record.type;
+    $("recordDate").value = record.date;
+    $("recordOdo").value = record.odometer;
+    $("recordCost").value = record.cost;
+    $("nextServiceKm").value = record.nextKm ?? "";
+    $("recordWorkshop").value = record.workshop || "";
+    $("recordNotes").value = record.notes || "";
+
+    data.records = data.records.filter(r => r.id !== id);
+
+    if (persist()) {
+      renderAll();
+      $("recordFormPanel").scrollIntoView({ behavior: "smooth" });
+      toast("Record loaded into the form. Save it after editing.");
+    }
+  }
+
+  function deleteRecord(id) {
+    if (!confirm("Delete this maintenance record?")) return;
+    data.records = data.records.filter(r => r.id !== id);
+    if (persist()) {
+      renderAll();
+      toast("Maintenance record deleted.");
+    }
+  }
+
+  function completeReminder(id) {
+    const reminder = data.reminders.find(r => r.id === id);
+    if (!reminder) return;
+
+    reminder.completed = true;
+    reminder.completedAt = dateToday();
+
+    if (persist()) {
+      renderAll();
+      toast("Reminder marked complete.");
+    }
+  }
+
+  function deleteReminder(id) {
+    if (!confirm("Delete this reminder?")) return;
+    data.reminders = data.reminders.filter(r => r.id !== id);
+    if (persist()) {
+      renderAll();
+      toast("Reminder deleted.");
+    }
+  }
+
+  $("recordFilter").addEventListener("change", renderHistory);
+
+  $("updateOdoBtn").addEventListener("click", () => {
+    const value = prompt(
+      "Enter your current odometer reading in kilometres:",
+      String(data.bike.odometer)
+    );
+
+    if (value === null) return;
+    if (value.trim() === "" || !Number.isFinite(Number(value)) || Number(value) < 0) {
+      toast("Enter a valid odometer reading.");
+      return;
+    }
+
+    const next = Number(value);
+
+    if (next < num(data.bike.odometer)) {
+      if (!confirm("This is lower than your current reading. Save it anyway?")) return;
+    }
+
+    data.bike.odometer = next;
+
+    if (persist()) {
+      renderAll();
+      toast("Odometer updated.");
+    }
+  });
+
+  $("exportBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "otxs-garage-backup.json";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast("Backup exported.");
+  });
+
+  $("printBtn").addEventListener("click", () => window.print());
+
+  $("clearAllBtn").addEventListener("click", () => {
+    if (!confirm(
+      "This will permanently remove this app's bike profile, records and reminders from this browser. Export a backup first if you need one. Continue?"
+    )) return;
+
+    data = {
+      bike: { ...defaultData.bike },
+      records: [],
+      reminders: []
+    };
+
+    if (persist()) {
+      $("recordForm").reset();
+      $("reminderForm").reset();
+      $("recordDate").value = dateToday();
+      $("recordCost").value = 0;
+      $("reminderCost").value = 0;
+      renderAll();
+      toast("All app data deleted.");
+    }
+  });
+
+  $("year").textContent = new Date().getFullYear();
+  $("recordDate").value = dateToday();
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
+
